@@ -1,0 +1,106 @@
+{% extends "blog/base.html" %}
+{% load blog_tags %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <h1 class="fs-1">
+                {{ post.title }}
+            </h1>
+            <p class="date">
+                Published {{ post.publish }} by {{ post.author }}
+            </p>
+            {{ post.body|markdown }}
+            <p>
+                <a href='{% url "post_share" post.id %}'>Share this post</a>
+            </p>
+            <h2>Similar posts</h2>
+            {% for post in similar_posts %}
+            <p>
+            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            </p>
+            {% empty %}
+            There are no similar posts yet.
+            {% endfor %}
+            {% with comments.count as total_comments %}
+                <h2 class="my-4">
+                    {{ total_comments }} comment{{ total_comments|pluralize }}
+                </h2>
+            {% endwith %}
+            {% for comment in comments %}
+                <div class="comment">
+                <p class="info">
+                Comment {{ forloop.counter }} by {{ comment.name }}
+                {{ comment.created }}
+                </p>
+                {{ comment.body|linebreaks }}
+                </div>
+                {% empty %}
+                <p>There are no comments yet.</p>
+            {% endfor %}
+            {% if new_comment %}
+                <h2>Your comment has been added.</h2>
+                {% else %}
+                <h2 class="mb-4">Add a new comment</h2>
+                <form action="." method="post" class="row g-3 needs-validation" novalidate>
+                    <div class="col-12 col-md-4">
+        <label for="id_name" class="form-label">Name:</label>
+        <input type="text" name="name" maxlength="80" required id="id_name"  class="form-control">
+        <div class="invalid-feedback">
+            Please choose a name.
+          </div>
+        
+    </div>
+    
+      
+    <div class="col-12 col-md-4">
+        <label for="id_email" class="form-label">Email:</label>
+        <input type="email" name="email" maxlength="254" required id="id_email" class="form-control">
+        <div class="invalid-feedback">
+            Please choose an email.
+        </div>
+        
+</div>
+      
+<div class="col-12 ">
+        <label for="id_body" class="form-label">Body:</label>
+        <textarea name="body" cols="40" rows="10" required id="id_body" class="form-control" ></textarea>
+    <div class="invalid-feedback">
+        Please choose a text.
+    </div>
+        
+        
+          </div>
+                    <input type="hidden" name="csrfmiddlewaretoken" value="mO0ErpUmMTRi569crEiSnZU182IhZJvexsK9uFu4fukNwcq14mrq0XG6M2DeIf6y">
+                    <p><input type="submit" value="Add comment" class="btn btn-primary"></p>
+                    </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+
+{% endblock %}
